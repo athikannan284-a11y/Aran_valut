@@ -409,8 +409,8 @@
       </div>
       <div class="settings-group">
         <div class="settings-group-title">Data</div>
-        <div class="settings-row danger-row" onclick="showToast('🗑️ Cache cleared!')"><span>🗑️ Clear Cache</span><span class="menu-arrow">›</span></div>
-        <div class="settings-row danger-row" onclick="confirmDelete()"><span>⚠️ Delete Account</span><span class="menu-arrow">›</span></div>
+        <div class="settings-row danger-row" onclick="showToast('🧹 Cache cleared')"><span>🗑️ Clear Cache</span><span class="menu-arrow">›</span></div>
+        <div class="settings-row danger-row" onclick="deleteAccount()"><span>⚠️ Delete Account</span><span class="menu-arrow">›</span></div>
       </div>
     </div>
   </div>
@@ -523,7 +523,14 @@
   </div>
 </div>
 
-<script src="data.js"></script>
-<script src="app.js"></script>
+  <!-- FIREBASE SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+  
+  <script src="firebase-config.js"></script>
+  <script src="data.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>

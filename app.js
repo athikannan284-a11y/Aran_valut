@@ -77,85 +77,57 @@ function validatePhone() {
 }
 
 let otpTimerInterval;
+let confirmationResult;
+
 function sendOTP() {
   const phone = document.getElementById('phone-input').value;
-  if (!phone || phone.length < 6) {
-    showToast('⚠️ Please enter a valid mobile number');
+  if (!phone || phone.length < 10) {
+    showToast('⚠️ Please enter a valid 10-digit mobile number');
     return;
   }
 
-  // Show sending state
+  const phoneNumber = "+91" + phone;
+  const appVerifier = window.recaptchaVerifier;
+
   const sendBtn = document.getElementById('btn-send-otp');
-  sendBtn.innerText = 'Sending OTP...';
+  sendBtn.innerText = 'Sending SMS...';
   sendBtn.disabled = true;
 
-  setTimeout(() => {
-    sendBtn.innerText = 'Send OTP';
-    sendBtn.disabled = false;
-
-    document.getElementById('phone-display').innerText = '+91 ' + phone;
-    document.getElementById('auth-phone-step').classList.add('hidden');
-    document.getElementById('auth-otp-step').classList.remove('hidden');
-
-    // Show OTP sent toast
-    showToast('📱 OTP sent to +91 ' + phone);
-
-    // Setup OTP input navigation
-    const otpInputs = document.querySelectorAll('.otp-box');
-    otpInputs.forEach(inp => { inp.value = ''; });
-    otpInputs.forEach((input, index) => {
-      // Remove old listeners by cloning
-      const newInput = input.cloneNode(true);
-      input.parentNode.replaceChild(newInput, input);
+  auth.signInWithPhoneNumber(phoneNumber, appVerifier)
+    .then((result) => {
+      confirmationResult = result;
+      showToast('📱 OTP sent to ' + phoneNumber);
+      
+      document.getElementById('phone-display').innerText = phoneNumber;
+      document.getElementById('auth-phone-step').classList.add('hidden');
+      document.getElementById('auth-otp-step').classList.remove('hidden');
+      
+      sendBtn.innerText = 'Send OTP';
+      sendBtn.disabled = false;
+      startOTPTimer();
+    }).catch((error) => {
+      console.error(error);
+      showToast('❌ Error: ' + error.message);
+      sendBtn.innerText = 'Send OTP';
+      sendBtn.disabled = false;
     });
+}
 
-    const freshInputs = document.querySelectorAll('.otp-box');
-    freshInputs.forEach((input, index) => {
-      input.addEventListener('input', function() {
-        this.value = this.value.replace(/[^0-9]/g, '');
-        if (this.value.length === 1) {
-          if (index < 5) freshInputs[index + 1].focus();
-        }
-      });
-      input.addEventListener('keydown', function(e) {
-        if (e.key === 'Backspace' && this.value === '') {
-          if (index > 0) freshInputs[index - 1].focus();
-        }
-      });
-    });
-
-    // Auto-focus first box
-    setTimeout(() => { freshInputs[0].focus(); }, 300);
-
-    // 🎯 AUTO-FILL demo OTP after 2s so user sees it work
-    setTimeout(() => {
-      const demoOTP = '1 2 3 4 5 6'.split(' ');
-      const boxes = document.querySelectorAll('.otp-box');
-      demoOTP.forEach((digit, i) => {
-        setTimeout(() => {
-          boxes[i].value = digit;
-          boxes[i].classList.add('otp-filled');
-          if (i < 5) boxes[i + 1].focus();
-        }, i * 120);
-      });
-      setTimeout(() => {
-        showToast('✅ Demo OTP auto-filled: 123456');
-      }, 800);
-    }, 1500);
-
-    // Countdown timer
-    let time = 30;
-    document.getElementById('timer-count').innerText = time;
-    clearInterval(otpTimerInterval);
-    otpTimerInterval = setInterval(() => {
-      time--;
-      document.getElementById('timer-count').innerText = time;
-      if (time <= 0) {
-        clearInterval(otpTimerInterval);
-        document.getElementById('otp-timer').innerHTML = '<span class="link" onclick="resendOTP()">Resend OTP</span>';
-      }
-    }, 1000);
-  }, 1200);
+function startOTPTimer() {
+  let time = 30;
+  const timerDisplay = document.getElementById('otp-timer');
+  timerDisplay.innerHTML = 'Resend OTP in <span id="timer-count">30</span>s';
+  
+  const interval = setInterval(() => {
+    time--;
+    const countEl = document.getElementById('timer-count');
+    if (countEl) countEl.innerText = time;
+    
+    if (time <= 0) {
+      clearInterval(interval);
+      timerDisplay.innerHTML = '<span class="link" onclick="sendOTP()">Resend OTP</span>';
+    }
+  }, 1000);
 }
 
 function resendOTP() {
@@ -182,34 +154,30 @@ function sendOTPTimer() {
 
 function verifyOTP() {
   const boxes = document.querySelectorAll('.otp-box');
-  const enteredOTP = Array.from(boxes).map(b => b.value).join('');
+  const code = Array.from(boxes).map(b => b.value).join('');
 
-  if (enteredOTP.length < 6) {
-    showToast('⚠️ Please enter the 6-digit OTP');
-    // Shake animation on empty boxes
-    boxes.forEach(b => {
-      if (!b.value) {
-        b.classList.add('otp-error');
-        setTimeout(() => b.classList.remove('otp-error'), 600);
-      }
-    });
+  if (code.length < 6) {
+    showToast('⚠️ Please enter the 6-digit code');
     return;
   }
 
   const btn = document.getElementById('btn-verify-otp');
-  const originalText = btn.innerText;
-  btn.innerText = '🔐 Verifying Device...';
+  btn.innerText = '🔐 Verifying...';
   btn.disabled = true;
 
-  setTimeout(() => {
-    showToast('📱 New device detected. Logging out other sessions...');
-    setTimeout(() => {
-      btn.innerText = originalText;
-      btn.disabled = false;
-      goScreen('screen-home');
-      showToast('✅ அரண் Verified: Single device active.');
-    }, 1500);
-  }, 1000);
+  confirmationResult.confirm(code).then((result) => {
+    const user = result.user;
+    showToast('✅ Verification Successful');
+    
+    // Proceed to dashboard
+    goScreen('screen-home');
+    loadUserDocuments(user.uid);
+  }).catch((error) => {
+    console.error(error);
+    showToast('❌ Invalid OTP. Please try again.');
+    btn.innerText = 'Verify & Continue';
+    btn.disabled = false;
+  });
 }
 
 function backToPhone() {
@@ -217,11 +185,36 @@ function backToPhone() {
   document.getElementById('auth-phone-step').classList.remove('hidden');
 }
 
+// Session Check
+auth.onAuthStateChanged((user) => {
+  if (user && currentScreen === 'screen-splash') {
+    goScreen('screen-home');
+    loadUserDocuments(user.uid);
+  }
+});
+
 function logout() {
-  showModal('Logout', 'Are you sure you want to log out of VaultX?', () => {
-    goScreen('screen-splash');
-    setTimeout(() => { goOTP(); }, 1000);
-    showToast('🚪 Logged out successfully');
+  showModal('Logout', 'Are you sure you want to log out of அரண்? Your data remains encrypted and safe.', () => {
+    auth.signOut().then(() => {
+      showToast('🚪 Logged out successfully');
+      location.reload();
+    });
+  });
+}
+
+function deleteAccount() {
+  const user = auth.currentUser;
+  showModal('Delete Account', 'WARNING: This will permanently delete your account and all documents. This action is irreversible!', () => {
+    // 1. Delete Firestore Data
+    db.collection('users').doc(user.uid).delete();
+    
+    // 2. Delete Auth User
+    user.delete().then(() => {
+      showToast('🗑️ Account and data permanently deleted');
+      setTimeout(() => { location.reload(); }, 1500);
+    }).catch((error) => {
+      showToast('❌ Error: Please re-login to delete account');
+    });
   });
 }
 
@@ -335,25 +328,56 @@ function clearUpload() {
   document.getElementById('file-input').value = "";
 }
 
+// --- FIREBASE DATA ---
+function loadUserDocuments(uid) {
+  db.collection('users').doc(uid).collection('documents')
+    .orderBy('createdAt', 'desc')
+    .onSnapshot((snapshot) => {
+      docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      renderDocs(docs);
+    });
+}
+
 function saveDocument() {
-  showToast('🔒 Document encrypted and saved!');
-  
-  // Simulate adding to list
+  const user = auth.currentUser;
+  if (!user) return;
+
+  const fileInput = document.getElementById('file-input');
+  const file = fileInput.files[0];
   const name = document.getElementById('doc-name').value || "New Document";
-  docs.unshift({
-    id: 'doc_new_' + Date.now(),
-    name: name,
-    type: 'Uploaded',
-    category: 'gov',
-    catName: '🏛️ Govt IDs',
-    date: 'Just now',
-    expiry: 'No Expiry',
-    icon: '📄'
-  });
+  const category = document.getElementById('doc-cat').value;
+
+  if (!file) {
+    showToast('⚠️ Please select a file first');
+    return;
+  }
+
+  showToast('🛡️ Encrypting & Uploading...');
   
-  renderDocs(docs);
-  clearUpload();
-  goScreen('screen-home');
+  // 1. Upload to Firebase Storage
+  const storageRef = storage.ref(`users/${user.uid}/docs/${Date.now()}_${file.name}`);
+  storageRef.put(file).then((snapshot) => {
+    return snapshot.ref.getDownloadURL();
+  }).then((url) => {
+    // 2. Save Metadata to Firestore
+    return db.collection('users').doc(user.uid).collection('documents').add({
+      name: name,
+      category: category,
+      catName: document.getElementById('doc-cat').options[document.getElementById('doc-cat').selectedIndex].text,
+      icon: file.type.startsWith('image/') ? '🖼️' : '📄',
+      fileUrl: url,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      date: new Date().toLocaleDateString(),
+      expiry: 'No Expiry'
+    });
+  }).then(() => {
+    showToast('✅ Document saved securely');
+    clearUpload();
+    goScreen('screen-home');
+  }).catch((error) => {
+    console.error(error);
+    showToast('❌ Upload failed: ' + error.message);
+  });
 }
 
 // --- NEURAL SCANNER ---
