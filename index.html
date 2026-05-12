@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>அரண் (Aran) – Secure Document Locker</title>
+<meta name="description" content="அரண் (Aran) – Premium AI-powered secure personal document locker with OTP authentication and cloud storage."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+<div id="app">
+
+  <!-- SPLASH -->
+  <div class="screen active" id="screen-splash">
+    <div class="splash-bg">
+      <div class="orb orb1"></div>
+      <div class="orb orb2"></div>
+      <div class="orb orb3"></div>
+    </div>
+    <div class="splash-content">
+      <div class="logo-wrap">
+        <!-- Premium Custom SVG Logo for Aran -->
+        <svg class="aran-logo-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#4361ee;stop-opacity:1" />
+              <stop offset="100%" style="stop-color:#7209b7;stop-opacity:1" />
+            </linearGradient>
+            <filter id="glow">
+              <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
+              <feMerge>
+                <feMergeNode in="coloredBlur"/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
+          </defs>
+          <!-- Hexagon Shield Base -->
+          <path d="M50 5 L85 25 L85 65 L50 95 L15 65 L15 25 Z" fill="none" stroke="url(#shieldGrad)" stroke-width="4" filter="url(#glow)">
+            <animate attributeName="stroke-dasharray" from="0,300" to="300,0" dur="2s" fill="freeze" />
+          </path>
+          <!-- Inner Core Pulse -->
+          <circle cx="50" cy="45" r="12" fill="var(--accent)" filter="url(#glow)">
+            <animate attributeName="opacity" values="0.4;1;0.4" dur="2s" repeatCount="indefinite" />
+            <animate attributeName="r" values="10;13;10" dur="2s" repeatCount="indefinite" />
+          </circle>
+          <!-- Circuit Lines -->
+          <path d="M50 15 V33 M50 57 V85 M25 35 H40 M60 35 H75" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" opacity="0.6">
+            <animate attributeName="opacity" values="0.2;0.8;0.2" dur="3s" repeatCount="indefinite" />
+          </path>
+        </svg>
+        <div class="logo-ring r1"></div>
+        <div class="logo-ring r2"></div>
+        <div class="logo-ring r3"></div>
+      </div>
+      <h1 class="app-name">அரண்</h1>
+      <p class="app-tagline">Your Secure Digital Locker</p>
+      <div class="splash-loader">
+        <div class="loader-bar"><div class="loader-fill"></div></div>
+      </div>
+    </div>
+    <p class="splash-footer">Protected by Military-Grade Encryption</p>
+  </div>
+
+  <!-- ONBOARDING -->
+  <div class="screen" id="screen-onboard">
+    <div class="onboard-bg">
+      <div class="orb orb1"></div><div class="orb orb2"></div>
+    </div>
+    <div class="onboard-slides">
+      <div class="onboard-slide active" id="ob1">
+        <div class="ob-visual">
+          <div class="ob-icon-wrap"><span style="font-size:64px">🛡️</span></div>
+          <div class="ob-glow"></div>
+        </div>
+        <h2>Military-Grade Security</h2>
+        <p>Your documents are protected with AES-256 end-to-end encryption. Only you can access your vault.</p>
+      </div>
+      <div class="onboard-slide" id="ob2">
+        <div class="ob-visual">
+          <div class="ob-icon-wrap"><span style="font-size:64px">🤖</span></div>
+          <div class="ob-glow" style="background:radial-gradient(circle,rgba(0,212,255,.25),transparent 70%)"></div>
+        </div>
+        <h2>AI Document Detection</h2>
+        <p>Smart OCR automatically identifies Aadhaar, PAN, Passport and more — organized instantly.</p>
+      </div>
+      <div class="onboard-slide" id="ob3">
+        <div class="ob-visual">
+          <div class="ob-icon-wrap"><span style="font-size:64px">🔐</span></div>
+          <div class="ob-glow" style="background:radial-gradient(circle,rgba(67,97,238,.25),transparent 70%)"></div>
+        </div>
+        <h2>Strict Single Access</h2>
+        <p>One mobile number, one secure account. Your vault is tied to your primary device for maximum security.</p>
+      </div>
+    </div>
+    <div class="onboard-dots">
+      <div class="dot active" id="dot0"></div>
+      <div class="dot" id="dot1"></div>
+      <div class="dot" id="dot2"></div>
+    </div>
+    <div class="onboard-actions">
+      <button class="btn-primary full" id="btn-next" onclick="nextSlide()">Continue</button>
+    </div>
+  </div>
+
+  <!-- OTP LOGIN -->
+  <div class="screen" id="screen-otp">
+    <div class="auth-bg">
+      <div class="orb orb1"></div><div class="orb orb2"></div>
+    </div>
+    <div class="auth-card" id="auth-phone-step">
+      <div class="auth-logo"><span>🛡️</span> அரண்</div>
+      <h2 class="auth-title">Welcome Back</h2>
+      <p class="auth-sub">Enter your mobile number to continue</p>
+      <div class="input-group">
+        <div class="phone-flag">🇮🇳 +91</div>
+        <input type="tel" id="phone-input" class="auth-input" placeholder="Enter mobile number" maxlength="10" oninput="validatePhone()"/>
+      </div>
+      <div class="auth-note">📱 We'll send a 6-digit OTP to verify</div>
+      <button class="btn-primary full" id="btn-send-otp" onclick="sendOTP()" disabled>Send OTP</button>
+      <p class="auth-terms">By continuing, you agree to our <span class="link">Terms</span> & <span class="link">Privacy Policy</span></p>
+    </div>
+    <div class="auth-card hidden" id="auth-otp-step">
+      <div class="auth-logo"><span>🛡️</span> அரண்</div>
+      <h2 class="auth-title">Verify OTP</h2>
+      <p class="auth-sub">Enter the 6-digit code sent to <span id="phone-display" class="highlight">+91 XXXXXXXXXX</span></p>
+      <div class="otp-boxes" id="otp-boxes">
+        <input class="otp-box" maxlength="1" type="tel"/>
+        <input class="otp-box" maxlength="1" type="tel"/>
+        <input class="otp-box" maxlength="1" type="tel"/>
+        <input class="otp-box" maxlength="1" type="tel"/>
+        <input class="otp-box" maxlength="1" type="tel"/>
+        <input class="otp-box" maxlength="1" type="tel"/>
+      </div>
+      <div class="otp-timer" id="otp-timer">Resend OTP in <span id="timer-count">30</span>s</div>
+      <button class="btn-primary full" id="btn-verify-otp" onclick="verifyOTP()">Verify & Continue</button>
+      <button class="btn-ghost full" onclick="backToPhone()">← Change Number</button>
+    </div>
+  </div>
+
+  <!-- HOME DASHBOARD -->
+  <div class="screen" id="screen-home">
+    <div class="home-header">
+      <div class="home-header-top">
+        <div class="header-user">
+          <div class="user-avatar">A</div>
+          <div>
+            <div class="greeting">Good Morning 👋</div>
+            <div class="username">Aathi Kumar</div>
+          </div>
+        </div>
+        <div class="header-icons">
+          <button class="icon-btn" onclick="goScreen('screen-profile')" title="Profile">⚙️</button>
+        </div>
+      </div>
+      <div class="storage-card glass">
+        <div class="storage-info">
+          <span class="storage-label">Vault Storage</span>
+          <span class="storage-val">2.4 GB <span class="storage-muted">/ 15 GB</span></span>
+        </div>
+        <div class="storage-bar"><div class="storage-fill" style="width:16%"></div></div>
+        <div class="vault-secure"><span class="secure-dot"></span> அரண் Secured · End-to-End Encrypted</div>
+      </div>
+    </div>
+    <div class="home-body">
+      <div class="quick-actions">
+        <div class="qa-title">Quick Actions</div>
+        <div class="qa-grid" style="grid-template-columns: 1fr;">
+          <button class="qa-btn" onclick="showShare()" style="flex-direction: row; gap: 20px; padding: 20px;">
+            <span class="qa-icon">👨‍👩‍👧</span><span>Family Sharing & Access</span>
+          </button>
+        </div>
+      </div>
+      <div class="section-title">Categories</div>
+      <div class="categories-scroll">
+        <div class="cat-chip active" onclick="filterCat('all')">All</div>
+        <div class="cat-chip" onclick="filterCat('gov')">🏛️ Govt IDs</div>
+        <div class="cat-chip" onclick="filterCat('banking')">🏦 Banking</div>
+        <div class="cat-chip" onclick="filterCat('edu')">🎓 Education</div>
+        <div class="cat-chip" onclick="filterCat('vehicle')">🚗 Vehicle</div>
+        <div class="cat-chip" onclick="filterCat('medical')">🏥 Medical</div>
+      </div>
+      <div class="section-title">Recent Documents</div>
+      <div class="docs-list" id="docs-list">
+        <!-- JS populated -->
+      </div>
+    </div>
+    <nav class="bottom-nav">
+      <button class="nav-btn active" onclick="goScreen('screen-home')"><span>🏠</span><span>Home</span></button>
+      <button class="nav-btn" onclick="goScreen('screen-search')"><span>🔍</span><span>Search</span></button>
+      <button class="nav-btn upload-fab" onclick="goScreen('screen-upload')"><span>＋</span></button>
+      <button class="nav-btn" onclick="goScreen('screen-scan')"><span>🧠</span><span>Neural Scan</span></button>
+      <button class="nav-btn" onclick="goScreen('screen-profile')"><span>👤</span><span>Profile</span></button>
+    </nav>
+  </div>
+
+  <!-- UPLOAD -->
+  <div class="screen" id="screen-upload">
+    <div class="sub-header">
+      <button class="back-btn" onclick="goScreen('screen-home')">←</button>
+      <h2 class="sub-title">Upload Document</h2>
+      <div></div>
+    </div>
+    <div class="upload-body">
+      <div class="upload-zone" id="upload-zone" onclick="triggerUpload()">
+        <div class="upload-zone-inner">
+          <div class="upload-anim"><span style="font-size:52px">📁</span></div>
+          <div class="upload-zone-glow"></div>
+          <h3>Tap to Upload</h3>
+          <p>Images, PDFs, Scanned Copies</p>
+          <span class="upload-formats">JPG · PNG · PDF · HEIC</span>
+        </div>
+      </div>
+      <input type="file" id="file-input" accept="image/*,.pdf" style="display:none" onchange="handleFileSelect(event)"/>
+      <div class="upload-or"><span>or choose method</span></div>
+      <div class="upload-methods">
+        <button class="method-btn" onclick="triggerUpload()"><span>📷</span> Camera</button>
+        <button class="method-btn" onclick="triggerUpload()"><span>📂</span> Files</button>
+        <button class="method-btn" onclick="goScreen('screen-scan')"><span>🤖</span> AI Scan</button>
+      </div>
+      <div class="upload-preview hidden" id="upload-preview">
+        <div class="preview-header">
+          <span class="preview-title" id="preview-filename">document.pdf</span>
+          <button class="preview-clear" onclick="clearUpload()">✕</button>
+        </div>
+        <div class="preview-img-wrap">
+          <img id="preview-img" src="" alt="preview" style="display:none"/>
+          <div id="preview-pdf" class="pdf-preview hidden">📄 PDF Document</div>
+        </div>
+        <div class="ai-detect-card glass" id="ai-detect-card">
+          <div class="ai-detect-header">
+            <div class="ai-pulse-minimal sm"></div> AI Detection
+          </div>
+          <div class="ai-result" id="ai-result">Analyzing document…</div>
+          <div class="ai-tags" id="ai-tags"></div>
+        </div>
+        <div class="doc-meta-form">
+          <label>Document Name</label>
+          <input class="meta-input" id="doc-name" type="text" placeholder="e.g. My Aadhaar Card"/>
+          <label>Category</label>
+          <select class="meta-input" id="doc-cat">
+            <option>Government IDs</option>
+            <option>Banking</option>
+            <option>Education</option>
+            <option>Vehicle Documents</option>
+            <option>Medical Records</option>
+            <option>Personal Files</option>
+          </select>
+          <label>Expiry Date (optional)</label>
+          <input class="meta-input" type="date" id="doc-expiry"/>
+        </div>
+        <button class="btn-primary full" onclick="saveDocument()">🔒 Save to Vault</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI SCAN -->
+  <div class="screen" id="screen-scan">
+    <div class="sub-header">
+      <button class="back-btn" onclick="goScreen('screen-home')">←</button>
+      <h2 class="sub-title">Neural Scan</h2>
+      <div></div>
+    </div>
+    <div class="scan-body">
+      <div class="scan-viewport" id="scan-viewport">
+        <div class="scan-frame">
+          <div class="scan-corner tl"></div>
+          <div class="scan-corner tr"></div>
+          <div class="scan-corner bl"></div>
+          <div class="scan-corner br"></div>
+          <div class="scan-line" id="scan-line"></div>
+          <div class="holographic-overlay"></div>
+          <div class="neural-nodes" id="neural-nodes"></div>
+          <div class="scan-label">Position document for Neural Scan</div>
+        </div>
+        <div class="scan-controls">
+          <button class="scan-btn" onclick="startNeuralScan()"><span>🧠</span> Start Neural Scan</button>
+        </div>
+      </div>
+      <div class="scan-result glass hidden" id="scan-result">
+        <div class="scan-result-header"><div class="ai-pulse-minimal sm"></div> AI Detected</div>
+        <div class="detected-doc" id="detected-doc">
+          <span class="detected-icon">🪪</span>
+          <div>
+            <div class="detected-type" id="detected-type">Aadhaar Card</div>
+            <div class="detected-conf">98.7% Confidence</div>
+          </div>
+        </div>
+        <div class="extracted-fields" id="extracted-fields">
+          <div class="field-row"><span class="field-label">Name</span><span class="field-val">AATHI KUMAR</span></div>
+          <div class="field-row"><span class="field-label">DOB</span><span class="field-val">15/08/1998</span></div>
+          <div class="field-row"><span class="field-label">Number</span><span class="field-val">XXXX XXXX 4521</span></div>
+        </div>
+        <button class="btn-primary full" onclick="saveScanResult()">Save to Vault</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEARCH -->
+  <div class="screen" id="screen-search">
+    <div class="search-header">
+      <button class="back-btn" onclick="goScreen('screen-home')">←</button>
+      <div class="search-bar-wrap">
+        <span class="search-icon-inp">🔍</span>
+        <input class="search-input" id="search-input" type="text" placeholder="Search documents…" oninput="doSearch(this.value)" autofocus/>
+        <button class="voice-btn" title="Voice Search">🎤</button>
+      </div>
+    </div>
+    <div class="search-body">
+      <div class="search-chips">
+        <div class="s-chip" onclick="quickSearch('aadhaar')">Aadhaar</div>
+        <div class="s-chip" onclick="quickSearch('pan')">PAN Card</div>
+        <div class="s-chip" onclick="quickSearch('passport')">Passport</div>
+        <div class="s-chip" onclick="quickSearch('driving')">Driving License</div>
+        <div class="s-chip" onclick="quickSearch('insurance')">Insurance</div>
+      </div>
+      <div class="search-results" id="search-results">
+        <div class="search-empty">
+          <span style="font-size:48px">🔍</span>
+          <p>Search your documents instantly</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DOCUMENT VIEWER -->
+  <div class="screen" id="screen-viewer">
+    <div class="viewer-header">
+      <button class="back-btn" onclick="goScreen('screen-home')">←</button>
+      <h2 class="sub-title" id="viewer-doc-name">Document</h2>
+      <button class="icon-btn" onclick="showDocOptions()">⋮</button>
+    </div>
+    <div class="viewer-body">
+      <div class="viewer-doc-wrap" id="viewer-doc-wrap">
+        <div class="doc-preview-card glass">
+          <span id="viewer-doc-icon" style="font-size:80px">📄</span>
+          <div class="doc-watermark">அரண் SECURED</div>
+        </div>
+      </div>
+      <div class="viewer-meta glass" id="viewer-meta">
+        <div class="meta-row"><span>📋 Type</span><span id="vm-type">—</span></div>
+        <div class="meta-row"><span>📁 Category</span><span id="vm-cat">—</span></div>
+        <div class="meta-row"><span>📅 Added</span><span id="vm-date">—</span></div>
+        <div class="meta-row"><span>⏳ Expires</span><span id="vm-expiry">—</span></div>
+        <div class="meta-row"><span>🔒 Encrypted</span><span class="highlight">AES-256</span></div>
+      </div>
+      <div class="viewer-actions">
+        <button class="viewer-btn" onclick="showToast('🔗 Share link copied!')">Share</button>
+        <button class="viewer-btn" onclick="showToast('📥 Downloading…')">Download</button>
+        <button class="viewer-btn danger" onclick="confirmDelete()">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROFILE -->
+  <div class="screen" id="screen-profile">
+    <div class="profile-header">
+      <button class="back-btn" onclick="goScreen('screen-home')">←</button>
+      <h2 class="sub-title">Profile</h2>
+      <div></div>
+    </div>
+    <div class="profile-body">
+      <div class="profile-card glass">
+        <div class="profile-avatar">A</div>
+        <div class="profile-name">Aathi Kumar</div>
+        <div class="profile-phone">+91 98765 43210</div>
+        <div class="profile-badge">🔐 Verified Account</div>
+      </div>
+      <div class="profile-stats glass">
+        <div class="stat-item"><div class="stat-val" id="stat-docs">12</div><div class="stat-label">Documents</div></div>
+        <div class="stat-div"></div>
+        <div class="stat-item"><div class="stat-val">2.4 GB</div><div class="stat-label">Used</div></div>
+        <div class="stat-div"></div>
+        <div class="stat-item"><div class="stat-val">6</div><div class="stat-label">Categories</div></div>
+      </div>
+      <div class="menu-list">
+        <div class="menu-item" onclick="goScreen('screen-settings')"><span>⚙️</span><span>Settings</span><span class="menu-arrow">›</span></div>
+        <div class="menu-item" onclick="goScreen('screen-security')"><span>🔒</span><span>Security Settings</span><span class="menu-arrow">›</span></div>
+        <div class="menu-item" onclick="showToast('📧 Support email opened')"><span>💬</span><span>Help & Support</span><span class="menu-arrow">›</span></div>
+        <div class="menu-item" onclick="showToast('⭐ Thanks for rating!')"><span>⭐</span><span>Rate அரண்</span><span class="menu-arrow">›</span></div>
+        <div class="menu-item" onclick="showToast('🔗 Link copied!')"><span>👥</span><span>Refer a Friend</span><span class="menu-arrow">›</span></div>
+        <div class="menu-item danger" onclick="logout()"><span>🚪</span><span>Logout</span><span class="menu-arrow">›</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div class="screen" id="screen-settings">
+    <div class="sub-header">
+      <button class="back-btn" onclick="goScreen('screen-profile')">←</button>
+      <h2 class="sub-title">Settings</h2>
+      <div></div>
+    </div>
+    <div class="settings-body">
+      <div class="settings-group">
+        <div class="settings-group-title">Storage</div>
+        <div class="settings-row"><span>☁️ Auto Backup</span><div class="toggle active" onclick="toggleThis(this)"><div class="toggle-thumb"></div></div></div>
+        <div class="settings-row"><span>📶 Offline Mode</span><div class="toggle" onclick="toggleThis(this)"><div class="toggle-thumb"></div></div></div>
+      </div>
+      <div class="settings-group">
+        <div class="settings-group-title">Notifications</div>
+        <div class="settings-row"><span>📲 Push Notifications</span><div class="toggle active" onclick="toggleThis(this)"><div class="toggle-thumb"></div></div></div>
+      </div>
+      <div class="settings-group">
+        <div class="settings-group-title">Appearance</div>
+        <div class="settings-row"><span>🌙 Dark Mode</span><div class="toggle active" onclick="toggleThis(this)"><div class="toggle-thumb"></div></div></div>
+        <div class="settings-row"><span>✨ Animations</span><div class="toggle active" onclick="toggleThis(this)"><div class="toggle-thumb"></div></div></div>
+      </div>
+      <div class="settings-group">
+        <div class="settings-group-title">Data</div>
+        <div class="settings-row danger-row" onclick="showToast('🗑️ Cache cleared!')"><span>🗑️ Clear Cache</span><span class="menu-arrow">›</span></div>
+        <div class="settings-row danger-row" onclick="confirmDelete()"><span>⚠️ Delete Account</span><span class="menu-arrow">›</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECURITY SETTINGS -->
+  <div class="screen" id="screen-security">
+    <div class="sub-header">
+      <button class="back-btn" onclick="goScreen('screen-profile')">←</button>
+      <h2 class="sub-title">Security</h2>
+      <div></div>
+    </div>
+    <div class="settings-body">
+      <div class="settings-group">
+        <div class="settings-group-title">Authentication</div>
+        <div class="settings-row"><span>👆 Biometric Login</span><div class="toggle active" onclick="toggleThis(this)"><div class="toggle-thumb"></div></div></div>
+        <div class="settings-row"><span>🔢 PIN Lock</span><div class="toggle active" onclick="toggleThis(this)"><div class="toggle-thumb"></div></div></div>
+      </div>
+      <div class="settings-group">
+        <div class="settings-group-title">Privacy</div>
+        <div class="settings-row"><span>📸 Screenshot Protection</span><div class="toggle active" onclick="toggleThis(this)"><div class="toggle-thumb"></div></div></div>
+        <div class="settings-row"><span>🫥 Hidden Vault Mode</span><div class="toggle" onclick="toggleThis(this)"><div class="toggle-thumb"></div></div></div>
+        <div class="settings-row"><span>⏰ Auto Logout</span><div class="toggle active" onclick="toggleThis(this)"><div class="toggle-thumb"></div></div></div>
+      </div>
+      <div class="settings-group">
+        <div class="settings-group-title">Advanced</div>
+        <div class="settings-row" onclick="showToast('🔑 Emergency access configured')"><span>🆘 Emergency Access</span><span class="menu-arrow">›</span></div>
+        <div class="settings-row" onclick="showToast('📋 Activity log opened')"><span>📋 Activity Log</span><span class="menu-arrow">›</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PREMIUM SUBSCRIPTION -->
+  <div class="screen" id="screen-premium">
+    <div class="sub-header">
+      <button class="back-btn" onclick="goScreen('screen-profile')">←</button>
+      <h2 class="sub-title">Premium</h2>
+      <div></div>
+    </div>
+    <div class="premium-body">
+      <div class="premium-hero glass">
+        <div class="premium-badge-lg">💎</div>
+        <h2 class="premium-title">Upgrade to Pro</h2>
+        <p class="premium-sub">Unlock the full power of VaultX</p>
+      </div>
+      <div class="premium-features">
+        <div class="p-feature">
+          <span class="p-f-icon">♾️</span>
+          <div class="p-f-text">
+            <h4>Unlimited Storage</h4>
+            <p>Store as many documents as you need without limits.</p>
+          </div>
+        </div>
+        <div class="p-feature">
+          <span class="p-f-icon">👨‍👩‍👧</span>
+          <div class="p-f-text">
+            <h4>Family Sharing</h4>
+            <p>Securely share access with up to 5 family members.</p>
+          </div>
+        </div>
+        <div class="p-feature">
+          <span class="p-f-icon">🕵️</span>
+          <div class="p-f-text">
+            <h4>Hidden Vault Mode</h4>
+            <p>An extra secret space with separate encryption.</p>
+          </div>
+        </div>
+        <div class="p-feature">
+          <span class="p-f-icon">🤖</span>
+          <div class="p-f-text">
+            <h4>Advanced AI OCR</h4>
+            <p>Priority processing for document detection.</p>
+          </div>
+        </div>
+      </div>
+      <div class="premium-plans">
+        <div class="plan-card active">
+          <div class="plan-header">
+            <span class="plan-name">Annual</span>
+            <span class="plan-price">₹1,299/yr</span>
+          </div>
+          <div class="plan-save">Save 40%</div>
+        </div>
+        <div class="plan-card">
+          <div class="plan-header">
+            <span class="plan-name">Monthly</span>
+            <span class="plan-price">₹199/mo</span>
+          </div>
+        </div>
+      </div>
+      <button class="btn-primary full" onclick="showToast('🚀 Upgrading to Premium...')">Subscribe Now</button>
+      <p class="premium-footer">Cancel anytime. Terms & Conditions apply.</p>
+    </div>
+  </div>
+
+</div><!-- end #app -->
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- MODAL OVERLAY -->
+<div class="modal-overlay hidden" id="modal-overlay" onclick="closeModal()">
+  <div class="modal glass" onclick="event.stopPropagation()">
+    <div class="modal-icon" id="modal-icon">⚠️</div>
+    <div class="modal-title" id="modal-title">Confirm Action</div>
+    <div class="modal-msg" id="modal-msg">Are you sure you want to proceed?</div>
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn-primary" id="modal-confirm" onclick="closeModal()">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
