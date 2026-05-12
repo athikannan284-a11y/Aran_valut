@@ -1,6 +1,6 @@
 // Firebase Configuration - Real credentials from your project
 const firebaseConfig = {
-  apiKey: "AIzaSyAnf6HacQmZUMksmf3DFpnQIQM15WKBecs",
+  apiKey: "AIzaSyAnf6HacQmZUMksmf3DFpnQIQMl5WKBecs",
   authDomain: "aran-vault.firebaseapp.com",
   projectId: "aran-vault",
   storageBucket: "aran-vault.firebasestorage.app",
